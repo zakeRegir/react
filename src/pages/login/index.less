@@ -1,0 +1,46 @@
+.login{
+  height:100%;
+  //在样式中可以正常些图片地址
+  background-image: url("./bg.jpg");
+  .login-header{
+    //开启flex布局，在父元素上开启，子元素相当于浮动，会排成一排
+    display: flex;
+    //侧轴水平居中
+    align-items: center;
+    height: 80px;
+    width: 100%;
+    background-color: rgba(21, 20, 13, 0.5);
+    img{
+      margin-left: 50px;
+      margin-right: 10px;
+      width: 40px;
+      height: 40px;
+    }
+    h1{
+      font-size: 25px;
+      color: #fff;
+    }
+  }
+
+  .login-content{
+    display: flex;
+    //将主侧轴调换，flex布局会在主轴方向排成一排
+    flex-direction: column;
+    align-items: center;
+    margin: 50px auto 0;
+    width: 400px;
+    height: 350px;
+    background-color: #fff;
+    h2{
+      margin: 30px 0;
+      font-weight: bold;
+      font-size: 30px;
+    }
+    .login-input{
+      width: 320px;
+    }
+    .login-btn{
+      width: 320px;
+    }
+  }
+}
