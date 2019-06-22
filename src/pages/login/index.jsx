@@ -1,5 +1,9 @@
 import React,{ Component } from 'react';
-import { Form, Icon, Input, Button } from 'antd';
+import {Form, Icon, Input, Button, message} from 'antd';
+
+// import ajax from '../../api/ajax'
+//用的是分别暴露，所以引入的时候要解构赋值
+import { reqLogin } from '../../api';
 
 import './index.less';
 
@@ -12,9 +16,56 @@ import logo from './logo.png';
 
 const Item = Form.Item;
 class Login extends Component{
-
+  //提交表单
   login = (e) =>{
     e.preventDefault();
+    //validateFields:校验并获取一组输入域的值与 Error，若 fieldNames 参数为空，则校验全部组件
+    this.props.form.validateFields(async(error, values) => {
+      //校验通过
+      if(!error){
+        const { username, password } = values;
+        //我们请求的服务器接口是http://localhost:5000
+
+        //1、直接在login中发请求
+       /* axios.post('/login',{ username, password })
+          .then((res) =>{
+            const { data } = res;
+            //status和msg是API接口文档给出的数据
+            //status：为0 代表请求成功
+            if(data.status === 0){
+              this.props.history.replace('/');
+            }else{
+              //message.error：错误提示，第一个参数是提示的内容，第二个参数是提示的时间
+              message.error(data.msg, 2);
+              //请求失败时重置密码
+              //resetFields:重置一组输入控件的值（为 initialValue）与状态，如不传入参数，则重置所有组件
+              this.props.form.resetFields('[password]');
+            }
+          })
+          .catch((err) =>{
+            message.error('网络出现异常，请刷新试试~',2);
+            this.props.form.resetFields('[password]');
+          })*/
+
+
+       //2、直接引入定义好的ajax强求函数
+        // const result = ajax('/login', {username, password}, 'post');
+
+        //2、在外部封装函数，并在api/index.js文件中将路径和请求方式定死，直接引入调用
+        const result = await reqLogin( username, password );
+
+        if (result) {
+          // 登录成功
+          this.props.history.replace('/');
+        } else {
+          // 登录失败
+          this.props.form.resetFields(['password']);
+        }
+
+      }else{
+        console.log('登录表单校验失败:', error);
+      }
+    });
   }
 
   validator = (rule, value, callback) => {
