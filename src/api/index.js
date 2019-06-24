@@ -42,4 +42,7 @@ export const reqWeather = function () {
       }
     }
   })
-}
+};
+
+//请求服务器上的数据，api文档中有详细数据
+export  const reqCategories = (parentId) => ajax('/manage/category/list',{parentId});
