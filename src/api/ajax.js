@@ -1,5 +1,13 @@
 import axios from 'axios';
-import { message } from 'antd';
+import {message} from 'antd';
+/*
+封装axios：处理请求失败，统一处理错误，因为请求错误的处理方式一般是相同的，只要返回一个提示就可以了
+  .then: 请求成功，但是可能用户名和密码错误，判断登录是否成功
+  .catch: 请求失败，可能是网络或者服务器出错
+
+  在ajax.js中设置统一处理错误的方法，需要传入三个参数
+  在index.js中将不变的参数传入确定的值，然后在页面中直接调用
+*/
 
 
 //封装一个发送axios请求校验的函数，在login中直接引入调用
@@ -31,14 +39,14 @@ API接口给出的，请求成功和失败返回的数据
 
 //ajax函数的返回值是执行promise返回的结果
 //如果执行.then 就会返回.then的返回值，.catch没有设置返回值，直接提示错误信息
-export default function ajax(url, data={}, method='get') {
+export default function ajax(url, data = {}, method = 'get') {
   //在axios请求中get请求和post请求传参不一样
   //先判断请求方式，再处理数据
   let reqParams = data;
   //转化成小写，请求方式严格区分大小写
   method = method.toLowerCase();
 
-  if(method === 'get'){
+  if (method === 'get') {
     reqParams = {
       //get请求传参，第二个参数：params：{ }
       //post请求直接传入路径和数据
@@ -47,18 +55,18 @@ export default function ajax(url, data={}, method='get') {
   }
 
   //[method]:变量要用对象[]的形式，不能用对象.
-   return axios[method](url, reqParams)
-      .then((res) => {
-        const {data} = res;
-        if (data.status === 0) {
-          //data.data :第一个data是传入的参数，第二个data是API文档中给出的，请求成功会返回一个对象中的data属性，值是用户的信息
-          return data.data;
-        } else {
-          message.error(data.msg, 2);
-        }
-      })
-      .catch((err) => {
-        // 请求失败：网络错误、服务器内部错误等
-        message.error('网络出现异常，请刷新试试~', 2);
-      })
- }
+  return axios[method](url, reqParams)
+    .then((res) => {
+      const {data} = res;
+      if (data.status === 0) {
+        //data.data :第一个data是传入的参数，第二个data是API文档中给出的，请求成功会返回一个对象中的data属性，值是用户的信息
+        return data.data;
+      } else {
+        message.error(data.msg, 2);
+      }
+    })
+    .catch((err) => {
+      // 请求失败：网络错误、服务器内部错误等
+      message.error('网络出现异常，请刷新试试~', 2);
+    })
+}

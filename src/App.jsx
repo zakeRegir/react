@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Route, Switch } from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 
 import './assets/less/index.less'
 
@@ -7,10 +7,10 @@ import Login from './pages/login';
 import Admin from './pages/admin';
 
 export default function App() {
-    return(
-      <Switch>
-        <Route path='/login' component={Login}/>
-        <Route path='/' component={Admin}/>
-      </Switch>
-    )
+  return (
+    <Switch>
+      <Route path='/login' component={Login}/>
+      <Route path='/' component={Admin}/>
+    </Switch>
+  )
 }

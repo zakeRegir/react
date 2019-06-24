@@ -25,7 +25,7 @@ class LeftNav extends Component {
 
   componentWillMount() {
     //页面路径
-    const { pathname } = this.props.location;
+    const {pathname} = this.props.location;
 
     // 根据menuList生成菜单
     //先遍历数据，如果是二级菜单，要再遍历一次children中的数据
@@ -33,32 +33,32 @@ class LeftNav extends Component {
     this.menus = menuList.map((menu) => {
       //children中保存的是二级菜单的数据，所以根据对象上是否有children就可以判断是否是二级菜单
       const children = menu.children;
-        //判断是一级菜单还是二级菜单
-        if (children) {
-          return <SubMenu
-            key={menu.key}
-            title={
-              <span>
-              <Icon type={menu.icon} />
+      //判断是一级菜单还是二级菜单
+      if (children) {
+        return <SubMenu
+          key={menu.key}
+          title={
+            <span>
+              <Icon type={menu.icon}/>
               <span>{menu.title}</span>
             </span>
-            }
-          >
-            {
-              children.map((item) =>{
-                if(item.key === pathname){
-                  // 说明当前地址是一个二级菜单，需要展开一级菜单
-                  // 初始化展开的菜单
-                  this.openKey = menu.key;
-                }
-                return this.createMenu(item)
-              })
-            }
-          </SubMenu>
-        } else {
-          return  this.createMenu(menu);
-        }
-      })
+          }
+        >
+          {
+            children.map((item) => {
+              if (item.key === pathname) {
+                // 说明当前地址是一个二级菜单，需要展开一级菜单
+                // 初始化展开的菜单
+                this.openKey = menu.key;
+              }
+              return this.createMenu(item)
+            })
+          }
+        </SubMenu>
+      } else {
+        return this.createMenu(menu);
+      }
+    })
 
     //初始化选中菜单，切换到根据页面路径，决定左侧菜单栏选中哪一项
     // 再当前函数中的数据函数外部拿不到，所以给this上添加属性
