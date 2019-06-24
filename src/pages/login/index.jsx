@@ -1,26 +1,24 @@
-import React,{ Component } from 'react';
-import {Form, Icon, Input, Button, message} from 'antd';
+import React from 'react';
+import {Form, Icon, Input, Button} from 'antd';
 
 // import ajax from '../../api/ajax'
 //用的是分别暴露，所以引入的时候要解构赋值
 import { reqLogin } from '../../api';
-
 import './index.less';
-
 //在React中图片资源需要引入
 //<img src={logo}/>   在标签中直接src属性中直接写变量
 import logo from './logo.png';
 
-
-
-
 const Item = Form.Item;
-class Login extends Component{
+
+//工厂函数组件中，只有一个参数，就是props
+//函数中没有this，所有的方法都要定义成变量
+function Login( props ){
   //提交表单
-  login = (e) =>{
+  const login = (e) =>{
     e.preventDefault();
     //validateFields:校验并获取一组输入域的值与 Error，若 fieldNames 参数为空，则校验全部组件
-    this.props.form.validateFields(async(error, values) => {
+    props.form.validateFields(async(error, values) => {
       //校验通过
       if(!error){
         const { username, password } = values;
@@ -56,7 +54,7 @@ class Login extends Component{
 
         if (result) {
           // 登录成功
-          this.props.history.replace('/');
+          props.history.replace('/');
         } else {
           // 登录失败
           this.props.form.resetFields(['password']);
@@ -68,7 +66,7 @@ class Login extends Component{
     });
   }
 
-  validator = (rule, value, callback) => {
+  const validator = (rule, value, callback) => {
     // callback必须调用
     /*
     rule：组件的名字等信息
@@ -106,18 +104,17 @@ class Login extends Component{
   有两种校验方法：
   validator：自定义校验
   */
-  render(){
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator } = props.form;
 
     return(
       <div className='login'>
         <header className='login-header'>
-          <img src={logo}/>
+          <img src={logo} alt='logo'/>
           <h1>React项目: 后台管理系统</h1>
         </header>
         <section className='login-content'>
           <h2>用户登录</h2>
-          <Form onSubmit={this.login} className='login-form'>
+          <Form onSubmit={login} className='login-form'>
             <Item>
               {
                 getFieldDecorator(
@@ -145,7 +142,7 @@ class Login extends Component{
                   {
                     rules: [
                       {
-                        validator: this.validator
+                        validator: validator
                       }
                     ]
                   }
@@ -161,7 +158,6 @@ class Login extends Component{
         </section>
       </div>
     )
-  }
 }
 
 // Form:高阶组件，第一次调用可以传被返回出来的新组件的名字，第二次调用传一个组件
