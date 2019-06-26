@@ -12,7 +12,6 @@ const {SubMenu, Item} = Menu;
 
 
 class LeftNav extends Component {
-
   //一级菜单
   createMenu = (menuList) => {
     return <Item key={menuList.key}>
@@ -24,8 +23,18 @@ class LeftNav extends Component {
   }
 
   componentWillMount() {
+    //初始化选中菜单,默认选中'/home'首页
+    let isHome = true;
+
     //页面路径
-    const {pathname} = this.props.location;
+    let {pathname} = this.props.location;
+
+    //product页面的三级路由页面路径，与key值匹配不上，需要处理一下
+    //以 /product/开头的路径，需要截取掉/product 后面的路径
+    const pathnameReg = /^\/product\//
+    if(pathnameReg.test(pathname)){
+      pathname = pathname.slice(0,8);
+    }
 
     // 根据menuList生成菜单
     //先遍历数据，如果是二级菜单，要再遍历一次children中的数据
@@ -50,6 +59,7 @@ class LeftNav extends Component {
                 // 说明当前地址是一个二级菜单，需要展开一级菜单
                 // 初始化展开的菜单
                 this.openKey = menu.key;
+                isHome = false;
               }
               return this.createMenu(item)
             })
@@ -62,9 +72,9 @@ class LeftNav extends Component {
 
     //初始化选中菜单，切换到根据页面路径，决定左侧菜单栏选中哪一项
     // 再当前函数中的数据函数外部拿不到，所以给this上添加属性
-    this.selectedKey = pathname;
+    //如果命中其他菜单路径就选中其他菜单，没有命中就重定向到/home
+    this.selectedKey = isHome ? '/home' : pathname ;
 
-    console.log(this.selectedKey)
   }
 
   render() {

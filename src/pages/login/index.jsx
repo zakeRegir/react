@@ -55,11 +55,14 @@ function Login(props) {
         const result = await reqLogin(username, password);
 
         if (result) {
+          /*
+          必须要先缓存数据再跳转，否则当跳转时发现没有用户信息，会重定向到登录页面，第二次登录才会成功
+          */
+          // 只有这里能拿到用户名密码。保存用户信息
+          setItem(result);
           // 登录成功
           props.history.replace('/');
 
-          // 只有这里能拿到用户名密码。保存用户信息
-          setItem(result);
         } else {
           // 登录失败
           props.form.resetFields(['password']);

@@ -35,14 +35,17 @@ class HeaderMain extends Component {
   async componentDidMount() {
     //更新时间，但是时间的格式需要下载一个dayjs库来处理
     //{ dayjs(sysTime).format('YYYY-MM-DD HH:mm:ss') }
-    setInterval(() => {
+    this.timer = setInterval(() => {
       this.setState({
         sysTime: Date.now()
       })
     }, 1000)
 
     // 发送请求，请求天气
-    const result = await reqWeather();
+    //cancel：取消请求的方法，promise;请求回来的数据
+    const { cancel, promise } = reqWeather();
+    this.cancel = cancel;
+    const result = await promise;
 
     if (result) {
       this.setState(result);
@@ -66,6 +69,15 @@ class HeaderMain extends Component {
     })
   }
 
+  //清除定时器，和请求天气数据的ajax请求
+  //只要组件整体在页面上没有任何体现，就相当于被卸载了
+  // 退出登录之后，因为组件被卸载了，但是定时器和ajax没有被取消，所以会产生内存泄漏
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    // 取消了ajax请求
+    this.cancel();
+  }
+
   //根据路径，切换头部右上角的文字
   /*初始化渲染和更新都需要切换
   如果在render中调用可以做到，但是因为上面componentDidMount中有一个定时器，用来更新时间，放在render中的代码会更新多次
@@ -73,7 +85,14 @@ class HeaderMain extends Component {
   */
   getTitle = (nextProps) => {
     //当前页面路径,路由组件的三大属性，props上的三大属性history、location、match
-    const {pathname} = nextProps.location;
+    let {pathname} = nextProps.location;
+
+    //处理product上的三级路由路径
+    const pathnameReg = /^\/product\//;
+    if(pathnameReg.test(pathname)){
+      pathname = pathname.slice(0,8);
+    }
+
 
     //因为有二级目录，所以要使用双层for循环嵌套的方式
     for (let i = 0; i < menuList.length; i++) {

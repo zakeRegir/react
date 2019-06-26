@@ -60,7 +60,7 @@ export default function ajax(url, data = {}, method = 'get') {
       const {data} = res;
       if (data.status === 0) {
         //data.data :第一个data是传入的参数，第二个data是API文档中给出的，请求成功会返回一个对象中的data属性，值是用户的信息
-        return data.data;
+        return data.data || {};
       } else {
         message.error(data.msg, 2);
       }

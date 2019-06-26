@@ -21,6 +21,8 @@ const {Header, Content, Footer, Sider} = Layout;
 export default class Admin extends Component {
   state = {
     collapsed: false,
+    isLoading:true,
+    success:false
   };
   onCollapse = collapsed => {
     this.setState({collapsed});
@@ -28,9 +30,10 @@ export default class Admin extends Component {
 
 // 判断登录是否成功
   async componentWillMount() {
+    // getItem():读取localStorage的值
     const user = getItem();
 
-    //如果存在用户，并且有id属性
+    //如果localStorage中有值，并且有id属性
     if (user && user._id) {
       // 发送请求验证 用户信息是否合法
       // 如果用户是登录进来的，就不需要。如果用户是使用之前的值，刷新访问进行来，就需要
@@ -40,16 +43,32 @@ export default class Admin extends Component {
       //如果存在id就直接退出条件判断语句，不用再执行重定向到登录页面的代码
       //为了防止有人伪造用户信息，因为在浏览器的localStorage中可以手动添加用户信息
       // 但是id是服务返回的数据，一个哈希值。不能伪造，所以要再判断一下id是否匹配的上
-      if (result) return;
+      if (result) {
+        //定义两个状态：isLoading：发送ajax请求    success：登录成功
+        return this.setState({
+          isLoading:false,
+          success:true
+        })
+      }
     }
-    this.props.history.replace('/login');
+    // this.props.history.replace('/login');  直接重定向会被render中重定向的值给覆盖
+
+    //登陆失败
+    this.setState({
+      isLoading: false,
+      success:false
+    })
   }
 
   render() {
-    const {collapsed} = this.state;
+    const {collapsed, isLoading, success} = this.state;
 
-    return (
-      <Layout style={{minHeight: '100vh'}}>
+    //发送ajax请求时返回一个空白页面，return  null代表一个空白页面
+    //必须返回一个虚拟dom对象，或者返回null才不会报错
+    if(isLoading) return  null;
+
+    //success为ture代表登陆成功，返回页面。登陆失败就重定向到/login登陆页面
+    return success ? <Layout style={{minHeight: '100vh'}}>
         <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
           <LeftNav collapsed={collapsed}/>
         </Sider>
@@ -69,7 +88,6 @@ export default class Admin extends Component {
                 <Route path="/charts/bar" component={Bar}/>
                 <Route path="/charts/pie" component={Pie}/>
                 <Redirect to="/home"/>
-                <Redirect to='/home'/>
               </Switch>
             </div>
           </Content>
@@ -77,7 +95,6 @@ export default class Admin extends Component {
             推荐使用谷歌浏览器，可以获得更佳页面操作体验
           </Footer>
         </Layout>
-      </Layout>
-    );
+      </Layout> : <Redirect to='/login'/>
   }
 }
