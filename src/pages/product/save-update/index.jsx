@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {Card, Icon, Form, Input, Cascader, InputNumber, Button} from 'antd';
 import RichTextEdior from './rich-text-editor';
 
+import PicturesWall from './picture-wall'
+
 import './index.less';
 import {reqAddProduct, reqCategories} from '../../../api'
 import draftToHtml from "draftjs-to-html";
@@ -214,6 +216,14 @@ class SaveUpdate extends Component {
             )
           }
         </Item>
+
+        <Item label='商品图片'>
+          <PicturesWall
+            // imgs={}
+            // detail={}
+          />
+        </Item>
+
         <Item label="商品详情" wrapperCol={{span: 20}}>
           <RichTextEdior ref={this.richTextEditorRef}/>
         </Item>

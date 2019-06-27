@@ -9,27 +9,40 @@ const {Option} = Select;
 
 export default class Index extends Component {
   state = {
-    products: []
+    products: [],
+    total: 0,
+    loading: true
   }
 
-  //获取商品分页列表
-  async componentDidMount() {
+  componentDidMount() {
     //参数是请求哪一页的数据和每页显示的商品数量
-    const result = await reqProducts(1, 3);
+    this.getProducts(1, 3);
+  }
 
-    if (result) {
+  //获取商品分页列表,参数：pageNum：页码（当前处在第几页），pageSize:每页条数（每页显示几条数据）
+  getProducts = async (pageNum, pageSize) => {
+    this.setState({
+      loading:true
+    });
+
+    const result = await reqProducts(pageNum, pageSize);
+
+    if(result){
       this.setState({
-        products: result.list
+        total: result.total,
+        products: result.list,
+        loading: false
       })
     }
   }
+
 
   showAddProduct = () => {
     this.props.history.push('/product/saveupdate')
   }
 
   render() {
-    const {products} = this.state;
+    const {products, total} = this.state;
     /*console.log(products);
     console.log(products._id);*/
 
@@ -100,7 +113,10 @@ export default class Index extends Component {
           showQuickJumper: true,
           showSizeChanger: true,
           pageSizeOptions: ['3', '6', '9', '12'],
-          defaultPageSize: 3
+          defaultPageSize: 3,
+          total , //总页数，属性的简写方式
+          onChange: this.getProducts,  //页码改变的回调，参数是改变后的页码及每页条数
+          onShowSizeChange: this.getProducts , // pageSize每页显示条数， 变化的回调
         }}
         rowKey='_id'
       />
