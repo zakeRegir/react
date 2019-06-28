@@ -19,11 +19,45 @@ class SaveUpdate extends Component {
 
   richTextEditorRef = React.createRef()
 
-  //选择分类
-  async componentDidMount() {
-    //请求一级分类的数据
-    const result = await reqCategories('0');
+  //请求分类
+  getCategories = async (parentId) =>{
+    const result = await reqCategories(parentId);
+    if(result){
+      //请求一级分类数据
+      if(parentId === 0){
+        this.setState({
+          options: result.map((item) => {
+            return {
+              value: item._id,//选中的值，要请求的是二级分类，所以这个值应该用id
+              label: item.name,//显示的内容
+              isLeaf: false//是否可以情求下一级的数据，false是可以请求
+            }
+          })
+        })
+      }else{
+        //请求二级分类数据
+        this.setState({
+          options: this.state.options.map((item) => {
+            if(item.value === parentId){
+              item.children = result.map((item) =>{
+                return{
+                  value: item._id,
+                  label: item.name
+                }
+              })
+            }
+            return item;
+          })
+        })
+      }
+    }
+  }
 
+  //选择分类
+  componentDidMount() {
+    //请求一级分类的数据
+    this.getCategories('0');
+    /*const result = reqCategories('0');
     if (result) {
       this.setState({
         options: result.map((item) => {
@@ -34,7 +68,23 @@ class SaveUpdate extends Component {
           }
         })
       })
+    };
+*/
+    //处理选择分类在修改名称和添加商品的不同显示
+    /*
+      如果是一级分类：pCategoryId: 0  categoryId: 一级分类id
+      如果是二级分类：pCategoryId:一级分类id  categoryId: 二级分类id
+     */
+    let categoriesId = [];
+    const product = this.props.location.state;
+    if(product){
+      if(product.pCategoryId !== '0'){
+        categoriesId.push(product.pCategoryId);
+      }
+      categoriesId.push(product.categoryId);
     }
+
+    this.categoriesId = categoriesId;
   }
 
   //加载二级分类的数据
@@ -124,6 +174,11 @@ class SaveUpdate extends Component {
   render() {
     const {getFieldDecorator} = this.props.form;
 
+    //在index.jsx中通过history传入的数据
+    const product = this.props.location.state;
+
+    //
+
     /*
     labelCol/ wrapperCol属性: 值是span和offset。
       labelCol代表<Form.Item>中的label属性所占的位置，wrapperCol：<Form.Item>中包裹的元素所占的大小
@@ -156,7 +211,9 @@ class SaveUpdate extends Component {
               {
                 rules: [
                   {required: true, message: '请输入商品名称'}
-                ]
+                ],
+                //initialValue默认值，如果有product数据，证明是点击修改名称跳转过来的
+                initialValue: product ? product.name : ''
               }
             )(
               <Input placeholder="请输入商品名称"/>
@@ -170,7 +227,8 @@ class SaveUpdate extends Component {
               {
                 rules: [
                   {required: true, message: '请输入商品描述'}
-                ]
+                ],
+                initialValue: product ? product.desc : ''
               }
             )(
               <Input placeholder="请输入商品描述"/>
@@ -184,7 +242,8 @@ class SaveUpdate extends Component {
               {
                 rules: [
                   {required: true, message: '请选择分类'}
-                ]
+                ],
+                initialValue: product ? this.categoriesId : []
               }
             )(
               <Cascader
@@ -203,7 +262,8 @@ class SaveUpdate extends Component {
               {
                 rules: [
                   {required: true, message: '请输入商品价格'}
-                ]
+                ],
+                initialValue: product ? product.price : ''
               }
             )(
               <InputNumber

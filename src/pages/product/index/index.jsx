@@ -11,7 +11,11 @@ export default class Index extends Component {
   state = {
     products: [],
     total: 0,
-    loading: true
+    loading: true,
+    searchType: 'productName',//默认根据商品名称搜索
+    searchContent: '',//搜索的内容
+    pageSize: 3,//每一页可以放几条数据
+    pageNum: 1 //页码
   }
 
   componentDidMount() {
@@ -24,6 +28,16 @@ export default class Index extends Component {
     this.setState({
       loading:true
     });
+
+    const { searchContent, searchType } = this.state;
+
+    let promise = null;
+
+
+
+
+
+
 
     const result = await reqProducts(pageNum, pageSize);
 
@@ -39,6 +53,38 @@ export default class Index extends Component {
 
   showAddProduct = () => {
     this.props.history.push('/product/saveupdate')
+  }
+
+  //修改名称
+  showUpdateProduct = (product) =>{
+    return () =>{
+      //history可以穿两个参数，第二个参数是数据，如果传了第二个参数，location上就会有一个state属性，保存着数据
+      this.props.history.push('/product/saveupdate', product);
+    }
+  }
+
+  //搜索
+  search = () =>{
+
+  }
+
+  //搜索框输入
+  handleChange(stateName){
+    return (e) =>{
+      let value = '';
+      if(stateName === 'searchType'){
+        value = e;
+      }else{
+        //收集搜索框中的内容
+        value = e.target.value;
+        //没有输入内容就不请求数据
+        if(!value) this.isSearch = false;
+      }
+
+      this.setState({
+        [stateName]: value
+      })
+    }
   }
 
   render() {
@@ -78,8 +124,8 @@ export default class Index extends Component {
         //没有定义dataIndex，会将所有的商品数据都传进来
         render: (product) => {
           return <div>
-            <MyButton>详情</MyButton>
-            <MyButton>修改</MyButton>
+            <MyButton >详情</MyButton>
+            <MyButton onClick={ this.showUpdateProduct(product) }>修改</MyButton>
           </div>
         }
       },
@@ -94,12 +140,12 @@ export default class Index extends Component {
     return <Card
       title={
         <div>
-          <Select defaultValue={0}>
-            <Option key={0} value={0}>根据商品名称</Option>
-            <Option key={1} value={1}>根据商品描述</Option>
+          <Select defaultValue='productName' onChange={this.handleChange('searchType')}>
+            <Option key={0} value='productName'>根据商品名称</Option>
+            <Option key={1} value='productDesc'>根据商品描述</Option>
           </Select>
-          <Input placeholder='关键字' className='search-input'/>
-          <Button>搜索</Button>
+          <Input placeholder='关键字' className='search-input' onChange={this.handleChange('searchContent')}/>
+          <Button onClick={this.search}>搜索</Button>
         </div>
       }
       extra={<Button type="primary" onClick={this.showAddProduct}><Icon type="plus"/>添加产品</Button>}

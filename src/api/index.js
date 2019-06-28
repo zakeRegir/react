@@ -85,3 +85,12 @@ export const reqAddProduct = ({name, desc, price, categoryId, pCategoryId,detail
 
 //删除图片
 export const reqDeleteProductImg = (name, id) => ajax('/manage/img/delete', {name, id}, 'post');
+
+//获取角色列表
+export const reqGetRoles = () => ajax('/manage/role/list');
+
+//添加角色
+export const reqAddRole = (name) => ajax('manage/role/add',{name}, 'post' );
+
+//设置角色权限
+export const reqUpdateRole = (_id, auth_name, menus) => ajax('/manage/role/update', {_id, auth_name, menus: JSON.stringify(menus)}, 'post');
