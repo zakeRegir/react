@@ -94,3 +94,9 @@ export const reqAddRole = (name) => ajax('manage/role/add',{name}, 'post' );
 
 //设置角色权限
 export const reqUpdateRole = (_id, auth_name, menus) => ajax('/manage/role/update', {_id, auth_name, menus: JSON.stringify(menus)}, 'post');
+
+//获取角色列表
+export const reqGetUser = () => ajax('/manage/user/list');
+
+//添加用户
+export const reqAddUser = ({username, password, phone, email, role_id}) => ajax('/manage/user/add',{username, password, phone, email, role_id}, 'post' )

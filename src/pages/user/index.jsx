@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { Card, Button, Table, Modal } from 'antd';
+import { Card, Button, Table, Modal, message } from 'antd';
 import dayjs from "dayjs";
 
 import AddUserForm from './add-user-form';
 import UpdateUserForm from './update-user-form';
 import MyButton from '../../components/my-button';
+import {reqAddUser, reqGetUser} from "../../api";
 
 export default class Role extends Component {
   state = {
-    users: [{
+    users: [/*{
       __v: 0,
       _id: "5c7dafe855fb843490b93a49",
       create_time: 1551740904866,
@@ -16,24 +17,58 @@ export default class Role extends Component {
       phone: "123456789",
       role_id: "5c7d222c12d5e51908cc0380",
       username: "aaa"
-    }], //用户数组
+    }*/], //用户数组
+    roles: [],  //权限数组
     isShowAddUserModal: false, //是否展示创建用户的标识
     isShowUpdateUserModal: false, //是否展示更新用户的标识
   };
 
   //创建用户的回调函数
-  addUser = () => {};
+  addUser = () => {
+    const { form } = this.addUserForm.props;
+    //收集表单数据
+    form.validateFields(async (err, values) =>{
+      console.log('values:',values);
+      if(!err){
+        const result = await reqAddUser(values);
+        console.log('result',result);
+
+        if(result){
+          message.success('添加用户成功');
+          //重置表单，清空表单数据
+          form.resetFields();
+
+          this.setState({
+            isShowAddUserModal: false,
+            users: [...this.state.users, result],
+          })
+        }
+      }
+    })
+  };
   
   updateUser = () => {
   
   };
+
+  async componentDidMount() {
+    const result = await reqGetUser();
+    // console.log(result);
+    if(result){
+      this.setState({
+        users: result.users,
+        roles: result.roles,
+      })
+    }
+  }
 
   toggleDisplay = (stateName, stateValue) => {
     return () => this.setState({[stateName]: stateValue})
   };
   
   render () {
-    const {users, isShowAddUserModal, isShowUpdateUserModal} = this.state;
+    //将roles作为标签属性传给AddUserForm组件
+    const {users, roles, isShowAddUserModal, isShowUpdateUserModal} = this.state;
 
     const columns = [
       {
@@ -56,6 +91,10 @@ export default class Role extends Component {
       {
         title: '所属角色',
         dataIndex: 'role_id',
+        render: (role_id) => {
+          const role = roles.find((role) => role._id === role_id);
+          return role && role.name;
+        }
       },
       {
         title: '操作',
@@ -95,7 +134,7 @@ export default class Role extends Component {
           okText='确认'
           cancelText='取消'
         >
-          <AddUserForm wrappedComponentRef={(form) => this.addUserForm = form}/>
+          <AddUserForm wrappedComponentRef={(form) => this.addUserForm = form} roles = {roles}/>
         </Modal>
   
         <Modal

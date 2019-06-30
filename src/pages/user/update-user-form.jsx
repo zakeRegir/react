@@ -45,7 +45,7 @@ class UpdateUserForm extends Component {
         <Item label='角色' labelCol={{span: 6}}  wrapperCol={{span: 15}}>
           {
             getFieldDecorator(
-              'role'
+              'role_id'
             )(
               <Select placeholder='请选择分类'>
                 <Option value='1'>1</Option>

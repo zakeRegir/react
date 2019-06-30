@@ -8,6 +8,7 @@
     "dayjs": "^1.8.14",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "^0.8.4",
+    "echarts": "^4.2.1",
     "html-to-draftjs": "^1.4.0",
     "jsonp": "^0.2.1",
     "react": "^16.8.6",
